@@ -48,7 +48,7 @@ class ConferenceController extends AbstractController
         name: 'app_conference_list',
         methods: ['GET'],
     )]
-    public function list(ConferenceRepository $conferenceRepository, Request $request): JsonResponse
+    public function list(ConferenceRepository $conferenceRepository, Request $request): Response
     {
         $start = null;
         $end = null;
@@ -61,19 +61,18 @@ class ConferenceController extends AbstractController
             $end = new DateTimeImmutable($request->query->getString('end'));
         }
 
-        $conferences = $conferenceRepository->searchBetweenDates(
-            $start,
-            $end,
-        );
+        if (null === $start && null === $end) {
+            $conferences = $conferenceRepository->findAll();
+        } else {
+            $conferences = $conferenceRepository->searchBetweenDates(
+                $start,
+                $end,
+            );
+        }
 
-        $content = array_map(function(Conference $conference): array {
-            return [
-                'id' => $conference->getId(),
-                'name' => $conference->getName(),
-            ];
-        }, $conferences);
-
-        return $this->json($content);
+        return $this->render('conference/list.html.twig', [
+            'conferences' => $conferences,
+        ]);
     }
 
     #[Route(
@@ -84,11 +83,10 @@ class ConferenceController extends AbstractController
         ],
         methods: ['GET']
     )]
-    public function show(Conference $conference): JsonResponse
+    public function show(Conference $conference): Response
     {
-        return $this->json([
-            'id' => $conference->getId(),
-            'name' => $conference->getName(),
+        return $this->render('conference/show.html.twig', [
+            'conference' => $conference,
         ]);
     }
 }

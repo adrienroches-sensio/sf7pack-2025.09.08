@@ -167,6 +167,11 @@ class Conference
         return $this->organizations;
     }
 
+    public function hasOrganizations(): bool
+    {
+        return count($this->getOrganizations()) > 0;
+    }
+
     public function addOrganization(Organization $organization): static
     {
         if (!$this->organizations->contains($organization)) {

@@ -12,10 +12,15 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $organization = new Organization();
-        $organization->setName('SensioLabs');
-        $organization->setPresentation('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
-        $organization->setCreatedAt(new \DateTimeImmutable('2010-05-12'));
+        $sensiolabs = new Organization();
+        $sensiolabs->setName('SensioLabs');
+        $sensiolabs->setPresentation('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+        $sensiolabs->setCreatedAt(new \DateTimeImmutable('2010-05-12'));
+
+        $symfonySas = new Organization();
+        $symfonySas->setName('Symfony SAS');
+        $symfonySas->setPresentation('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+        $symfonySas->setCreatedAt(new \DateTimeImmutable('2010-05-12'));
 
         for ($i = 15; $i <= 25; $i++) {
             $year = "20{$i}";
@@ -29,12 +34,24 @@ class AppFixtures extends Fixture
             $conference->setEndAt($start->modify('+2 days'));
             $conference->setAccessible(true);
 
-            $organization->addConference($conference);
+            $sensiolabs->addConference($conference);
+            $symfonySas->addConference($conference);
 
             $manager->persist($conference);
         }
 
-        $manager->persist($organization);
+        $manager->persist($sensiolabs);
+        $manager->persist($symfonySas);
+
+        $conferenceWithoutOrganization = new Conference();
+        $conferenceWithoutOrganization->setName("SymfonyCon without organization");
+        $conferenceWithoutOrganization->setDescription('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+        $conferenceWithoutOrganization->setStartAt(new DateTimeImmutable('2010-05-12'));
+        $conferenceWithoutOrganization->setEndAt(new DateTimeImmutable('2010-05-14'));
+        $conferenceWithoutOrganization->setAccessible(false);
+        $conferenceWithoutOrganization->setPrerequisites('Some prerequisites.');
+
+        $manager->persist($conferenceWithoutOrganization);
 
         $manager->flush();
     }
