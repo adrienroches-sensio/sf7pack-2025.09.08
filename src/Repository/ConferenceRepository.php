@@ -46,6 +46,32 @@ class ConferenceRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return list<Conference>
+     */
+    public function list(): array
+    {
+        return $this->findAll();
+    }
+
+    /**
+     * @return list<Conference>
+     */
+    public function searchByName(string $name): array
+    {
+        $qb = $this->createQueryBuilder('conference');
+
+        $qb
+            ->andWhere($qb->expr()->like('conference.name', ':name'))
+            ->setParameter(
+                'name',
+                "%{$name}%"
+            )
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Conference[] Returns an array of Conference objects
     //     */
