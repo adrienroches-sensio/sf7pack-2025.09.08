@@ -4,26 +4,22 @@ declare(strict_types=1);
 
 namespace App\Search;
 
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+#[AsAlias]
 final class ApiConferenceSearch implements ConferenceSearchInterface
 {
     public function __construct(
+        #[Target('devevents-api.client')]
         private readonly HttpClientInterface $httpClient,
-
-        #[Autowire(env: 'CONFERENCE_API_KEY')]
-        private readonly string $apiKey
     ) {
     }
 
     public function searchByName(string|null $name = null): array
     {
         $options = [
-            'headers' => [
-                'apikey' => $this->apiKey,
-                'accept' => 'application/json',
-            ],
             'query' => [],
         ];
 
@@ -33,8 +29,8 @@ final class ApiConferenceSearch implements ConferenceSearchInterface
             $options['query']['name'] = $name;
         }
 
-        $response = $this->httpClient->request('GET', 'https://www.devevents-api.fr/events', $options);
+        $response = $this->httpClient->request('GET', '/events', $options);
 
-        dump($response->toArray());
+        dd($response->toArray());
     }
 }
