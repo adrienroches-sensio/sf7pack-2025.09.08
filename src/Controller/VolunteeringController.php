@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Conference;
 use App\Entity\Volunteering;
 use App\Form\VolunteeringType;
+use App\Volunteering\VolunteerSubscribedToConferenceEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +24,7 @@ class VolunteeringController extends AbstractController
     }
 
     #[Route('/volunteer/new', name: 'app_volunteering_new', methods: ['GET', 'POST'])]
-    public function newVolunteer(Request $request, EntityManagerInterface $manager): Response
+    public function newVolunteer(Request $request, EntityManagerInterface $manager, EventDispatcherInterface $eventDispatcher): Response
     {
         $volunteering = (new Volunteering())->setForUser($this->getUser());
         $options = [];
@@ -39,6 +41,10 @@ class VolunteeringController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager->persist($volunteering);
             $manager->flush();
+
+            $eventDispatcher->dispatch(new VolunteerSubscribedToConferenceEvent(
+                $volunteering
+            ));
 
             return $this->redirectToRoute('app_volunteering_show', ['id' => $volunteering->getId()]);
         }
