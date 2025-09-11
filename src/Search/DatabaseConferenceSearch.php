@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace App\Search;
 
-use App\Entity\Conference;
 use App\Repository\ConferenceRepository;
 
-final class DatabaseConferenceSearch
+final class DatabaseConferenceSearch implements ConferenceSearchInterface
 {
     public function __construct(
         private readonly ConferenceRepository $conferenceRepository,
     ) {
     }
 
-    /**
-     * @return list<Conference>
-     */
     public function searchByName(string|null $name = null): array
     {
         $name = trim($name ?? '');
