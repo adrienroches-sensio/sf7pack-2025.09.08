@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Search;
 
-use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-#[AsAlias]
 final class ApiConferenceSearch implements ConferenceSearchInterface
 {
     public function __construct(
@@ -31,8 +29,6 @@ final class ApiConferenceSearch implements ConferenceSearchInterface
 
         $response = $this->httpClient->request('GET', '/events', $options);
 
-        dump($response->toArray());
-
-        return [];
+        return $response->toArray();
     }
 }
