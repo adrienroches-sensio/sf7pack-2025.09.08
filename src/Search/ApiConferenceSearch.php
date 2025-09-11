@@ -31,6 +31,8 @@ final class ApiConferenceSearch implements ConferenceSearchInterface
 
         $response = $this->httpClient->request('GET', '/events', $options);
 
-        dd($response->toArray());
+        dump($response->toArray());
+
+        return [];
     }
 }
