@@ -6,8 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Conference;
 use App\Form\ConferenceType;
-use App\Repository\ConferenceRepository;
-use DateTimeImmutable;
+use App\Search\DatabaseConferenceSearch;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,27 +45,9 @@ class ConferenceController extends AbstractController
         name: 'app_conference_list',
         methods: ['GET'],
     )]
-    public function list(ConferenceRepository $conferenceRepository, Request $request): Response
+    public function list(DatabaseConferenceSearch $databaseConferenceSearch, Request $request): Response
     {
-        $start = null;
-        $end = null;
-
-        if ($request->query->has('start')) {
-            $start = new DateTimeImmutable($request->query->getString('start'));
-        }
-
-        if ($request->query->has('end')) {
-            $end = new DateTimeImmutable($request->query->getString('end'));
-        }
-
-        if (null === $start && null === $end) {
-            $conferences = $conferenceRepository->findAll();
-        } else {
-            $conferences = $conferenceRepository->searchBetweenDates(
-                $start,
-                $end,
-            );
-        }
+        $conferences = $databaseConferenceSearch->searchByName($request->query->getString('name'));
 
         return $this->render('conference/list.html.twig', [
             'conferences' => $conferences,

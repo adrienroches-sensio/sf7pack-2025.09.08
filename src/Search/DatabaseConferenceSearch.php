@@ -19,7 +19,9 @@ final class DatabaseConferenceSearch
      */
     public function searchByName(string|null $name = null): array
     {
-        if (null === $name) {
+        $name = trim($name ?? '');
+
+        if ('' === $name) {
             return $this->conferenceRepository->list();
         }
 
