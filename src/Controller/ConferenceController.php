@@ -47,6 +47,29 @@ class ConferenceController extends AbstractController
     }
 
     #[Route(
+        path: '/conference/{id}/edit',
+        name: 'app_conference_edit',
+        methods: ['GET', 'POST'],
+    )]
+    #[IsGranted(new Expression('is_granted("ROLE_WEBSITE") or is_granted("ROLE_ORGANIZER")'))]
+    public function editConference(Request $request, EntityManagerInterface $em, Conference $conference): Response
+    {
+        $form = $this->createForm(ConferenceType::class, $conference);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($conference);
+            $em->flush();
+
+            return $this->redirectToRoute('app_conference_show', ['id' => $conference->getId()]);
+        }
+
+        return $this->render('conference/edit.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route(
         path: '/conferences',
         name: 'app_conference_list',
         methods: ['GET'],
