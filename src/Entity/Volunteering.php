@@ -5,28 +5,34 @@ namespace App\Entity;
 use App\Repository\VolunteeringRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: VolunteeringRepository::class)]
 class Volunteering
 {
+    #[Groups(['volunteering/show'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['volunteering/show'])]
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $startAt = null;
 
+    #[Groups(['volunteering/show'])]
     #[Assert\GreaterThanOrEqual(propertyPath: 'startAt')]
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $endAt = null;
 
+    #[Groups(['volunteering/show'])]
     #[ORM\ManyToOne(inversedBy: 'volunteerings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Conference $conference = null;
 
+    #[Groups(['volunteering/show'])]
     #[ORM\ManyToOne(inversedBy: 'volunteerings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $forUser = null;
