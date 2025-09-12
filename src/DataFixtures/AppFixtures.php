@@ -66,6 +66,7 @@ class AppFixtures extends Fixture
         $conferenceWithoutOrganization->setEndAt(new DateTimeImmutable('2010-05-14'));
         $conferenceWithoutOrganization->setAccessible(false);
         $conferenceWithoutOrganization->setPrerequisites('Some prerequisites.');
+        $conferenceWithoutOrganization->setCreatedBy($creator);
 
         $manager->persist($conferenceWithoutOrganization);
 
