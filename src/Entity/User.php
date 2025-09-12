@@ -41,9 +41,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Volunteering::class, mappedBy: 'forUser', orphanRemoval: true)]
     private Collection $volunteerings;
 
+    /**
+     * @var Collection<int, Conference>
+     */
+    #[ORM\OneToMany(targetEntity: Conference::class, mappedBy: 'createdBy')]
+    private Collection $conferences;
+
     public function __construct()
     {
         $this->volunteerings = new ArrayCollection();
+        $this->conferences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -151,6 +158,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($volunteering->getForUser() === $this) {
                 $volunteering->setForUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conference>
+     */
+    public function getConferences(): Collection
+    {
+        return $this->conferences;
+    }
+
+    public function addConference(Conference $conference): static
+    {
+        if (!$this->conferences->contains($conference)) {
+            $this->conferences->add($conference);
+            $conference->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConference(Conference $conference): static
+    {
+        if ($this->conferences->removeElement($conference)) {
+            // set the owning side to null (unless already changed)
+            if ($conference->getCreatedBy() === $this) {
+                $conference->setCreatedBy(null);
             }
         }
 
