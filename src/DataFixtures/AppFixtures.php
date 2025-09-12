@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Conference;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Entity\Volunteering;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -50,9 +51,19 @@ class AppFixtures extends Fixture
             $conference->setAccessible(true);
             $conference->setCreatedBy($creator);
 
+            $volunteering = (new Volunteering())
+                ->setForUser($creator)
+                ->setConference($conference)
+                ->setStartAt($start)
+                ->setEndAt($start->modify('+2 days'))
+            ;
+
+            $conference->addVolunteering($volunteering);
+
             $sensiolabs->addConference($conference);
             $symfonySas->addConference($conference);
 
+            $manager->persist($volunteering);
             $manager->persist($conference);
         }
 
