@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Conference;
 use App\Form\ConferenceType;
 use App\Search\ConferenceSearchInterface;
+use App\Security\ConferencePermissions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +52,7 @@ class ConferenceController extends AbstractController
         name: 'app_conference_edit',
         methods: ['GET', 'POST'],
     )]
-    #[IsGranted(new Expression('is_granted("ROLE_WEBSITE") or is_granted("ROLE_ORGANIZER")'))]
+    #[IsGranted(ConferencePermissions::EDIT, 'conference')]
     public function editConference(Request $request, EntityManagerInterface $em, Conference $conference): Response
     {
         $form = $this->createForm(ConferenceType::class, $conference);
