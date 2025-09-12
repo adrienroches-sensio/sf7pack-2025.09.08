@@ -4,14 +4,29 @@ namespace App\DataFixtures;
 
 use App\Entity\Conference;
 use App\Entity\Organization;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class AppFixtures extends Fixture
 {
+    public function __construct(
+        private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
+        $creator = (new User())
+            ->setUsername('creator')
+            ->setPassword($this->passwordHasherFactory->getPasswordHasher(User::class)->hash('creator'))
+            ->setRoles(['ROLE_USER'])
+        ;
+
+        $manager->persist($creator);
+
         $sensiolabs = new Organization();
         $sensiolabs->setName('SensioLabs');
         $sensiolabs->setPresentation('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
@@ -33,6 +48,7 @@ class AppFixtures extends Fixture
             $conference->setStartAt($start);
             $conference->setEndAt($start->modify('+2 days'));
             $conference->setAccessible(true);
+            $conference->setCreatedBy($creator);
 
             $sensiolabs->addConference($conference);
             $symfonySas->addConference($conference);
